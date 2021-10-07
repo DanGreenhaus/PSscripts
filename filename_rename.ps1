@@ -3,4 +3,5 @@ $dir = "C:\Users\Dan\Downloads" #this is the folder location that needs to be re
 $phrase = " Replace this stuff" #<replace this with phrase you are looking to remove>
 #remove the last number of characters in the file names
 $length=$phrase.Length 
-Get-ChildItem $dir -Recurse| Where-Object { $_.Name -like "*$phrase*" } | Rename-Item -NewName { $_.name.substring(0,$_.BaseName.length-$length)+$_.Extension}# -WhatIf -verbose
+Get-ChildItem $dir -Recurse| Where-Object { $_.Name -like "*$phrase*" } | `
+  Rename-Item -NewName { $_.name.substring(0,$_.BaseName.length-$length)+$_.Extension}# -WhatIf -verbose
