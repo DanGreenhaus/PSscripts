@@ -1,3 +1,4 @@
+$servers = Get-Content <insert file name and path here>
 ForEach($server in $servers) {
   Write-Host "processing workstation $server"
   invoke-command -ComputerName $server -ScriptBlock {
