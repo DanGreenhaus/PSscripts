@@ -16,4 +16,4 @@ $Website="<insert website URL>"
 
 (Invoke-WebRequest -Method Head -uri $Website -SkipHttpErrorCheck -SkipCertificateCheck).rawcontent
 
-nmap -p 22 -A -sV -Pn --reason <insert URL here> #run this command from the venom server to find the SSH version
+nmap -p 22 -A -sV -Pn --reason <insert URL here> #run this command from the linux server to find the SSH version
