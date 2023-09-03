@@ -1,3 +1,4 @@
+#this script is designed to retrieve NSG info for databricks assets.
 if (!(Get-Module -ListAvailable -Name Az*)) {#if all Azure Modules if they don't currently exist
     Write-Host "Module does not exist; installing Azure Management Module from PSGallery"
     Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
