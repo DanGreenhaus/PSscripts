@@ -3,7 +3,7 @@ $dir = "<insert folder path of files here>" #this is the folder location that ne
 $phrase = " <Replace this stuff>" #this with phrase you are looking to remove
 #remove the last number of characters in the file names
 $length=$phrase.Length 
-Get-ChildItem $dir -Recurse| Where-Object { $_.Name -like "*$phrase*" } | `
+Get-ChildItem $dir -Recurse| Where-Object { $_.Name -like "*$phrase*" } |
   Rename-Item -NewName { $_.name.substring(0,$_.BaseName.length-$length)+$_.Extension}# -WhatIf -verbose
 
 #if you have multiple items:
@@ -13,17 +13,17 @@ $phrases=@(
     "<etc>" 
 )
 foreach ($phrase in $phrases){
-  Get-ChildItem $dir -Recurse| Where-Object { $_.Name -like "*$phrase*" } | Rename-Item -NewName `
-    { $_.Name -replace [regex]::Escape($Phrase),""}# -WhatIf 
+  Get-ChildItem $dir -Recurse| Where-Object { $_.Name -like "*$phrase*" } |
+   Rename-Item -NewName { $_.Name -replace [regex]::Escape($Phrase),""}# -WhatIf 
 }
 
 #if you need to eliminate the _ in a filename, and replace it with a space
-Get-ChildItem $dir -Recurse| Where-Object { $_.Name -like "*$phrase*" } | Rename-Item -NewName `
-  { $_.Name -replace "_"," " }
+Get-ChildItem $dir -Recurse| Where-Object { $_.Name -like "*$phrase*" } | 
+Rename-Item -NewName { $_.Name -replace "_"," " }
 
 #to rename certain files that meet case criteria
-Get-ChildItem $dir -Recurse| Where-Object { $_.Name -clike "*$phrase*" } | Rename-Item -NewName `
-  { $_.Name -replace "Deadly Class v","Deadly Cass Vol. " }
+Get-ChildItem $dir -Recurse| Where-Object { $_.Name -clike "*$phrase*" } |
+ Rename-Item -NewName { $_.Name -replace "Deadly Class v","Deadly Cass Vol. " }
 
 #these commands will find folders with a particular phrase in the name
 Get-ChildItem $dir -recurse -filter $phrase -Directory | ForEach-Object { $_.fullname }
