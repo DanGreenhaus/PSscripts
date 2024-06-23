@@ -4,7 +4,7 @@ Get-ADPrincipalGroupMembership "<username>" | Get-ADGroup -Properties Descriptio
 
 #look up AD group based on description
 $email="<insert email address here>"
-$appname="kenna"
+$appname="<insert App name based on description>"
 Get-ADPrincipalGroupMembership -Identity (get-aduser -Filter {emailaddress -eq $email}).sAMAccountName | Get-ADGroup -Properties Description  | Where-Object {$_.description -like "*$appname*"}
 
 Get-ADPrincipalGroupMembership "<insert username>" | Get-ADGroup -Properties Description  <#| Where-Object {$_.description -like '*app*'}#>  | Sort-Object -descending | select-object name, description
