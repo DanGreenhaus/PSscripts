@@ -39,3 +39,16 @@ Get-ChildItem $dir\zipfiles\*.* -recurse | Move-Item -Destination "$dir\zipfiles
 #or
 Get-ChildItem "$dir\*.zip" -Recurse |Expand-Archive -DestinationPath "$dir\" -Force #unzips files into root folder
 Get-ChildItem "$dir\*.zip" -Recurse | Remove-Item #removes the zip files after they are extracted
+
+#to remove trailing spaces
+Get-ChildItem -Path $targetDirectory -File | ForEach-Object {
+  $originalName = $_.Name.TrimEnd()  # Trim trailing spaces first
+  $pattern = "\((.*?)\)"
+  If ($originalName -match $pattern) {
+      $newName = $matches[1] + " - " + $originalName.Replace($matches[0], "").TrimEnd()
+      $newName = $_.Name.TrimEnd() 
+      Rename-Item -Path $_.FullName -NewName $newName -ErrorAction Stop
+      Write-Host "Renamed $_ to $newName"  # Provide feedback on successful renaming
+  }
+}
+
