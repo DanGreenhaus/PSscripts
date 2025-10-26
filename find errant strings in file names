@@ -1,0 +1,31 @@
+# Set the path to the folder you want to search
+$folderPath = "<target directory"  # 🔧 Change this to your target directory
+
+# Regular expression to match full parenthetical strings with leading spaces, but exclude matches containing only digits (even with optional whitespace)
+$regex = '\s*\((?!\s*\d+\s*\))[^)]*\)'  
+
+# Initialize an empty array to hold the results
+$results = @()
+
+# Get all files in the folder and subfolders
+Get-ChildItem -Path $folderPath -Recurse -File | ForEach-Object {
+
+    # Check if the file name matches the regex pattern
+    if ($_.Name -match $regex) {
+
+        # Add the matched file path and quoted match to the results
+        $results += [PSCustomObject]@{
+            FileName = $_.FullName                       # 🗂️ Full file path
+            Match = "`t`"" + $matches[0] + "`""          # ➕ adds a Tab + Quotes the results 
+        }
+    }
+}
+
+# Generate timestamp string for file naming (e.g., 2025-07-27_2300)
+$timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+
+# Construct full output file path with timestamp included
+$outputPath = ".\parentheses_matches_$timestamp.csv"
+
+# Export results to a timestamped CSV file
+$results | Export-Csv -Path $outputPath -NoTypeInformation -Encoding UTF8

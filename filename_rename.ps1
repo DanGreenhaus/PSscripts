@@ -13,8 +13,57 @@ $phrases=@(
     "<etc>" 
 )
 foreach ($phrase in $phrases){
-  Get-ChildItem $dir -Recurse| Where-Object { $_.Name -like "*$phrase*" } |
-   Rename-Item -NewName { $_.Name -replace [regex]::Escape($Phrase),""}# -WhatIf 
+# Initialize a report variable
+$report = @()
+foreach ($phrase in $phrases) {
+ # Recursively get all files and folders under $dir
+    Get-ChildItem $dir -Recurse | Where-Object {
+        # Match items whose names contain the current phrase
+        $_.Name -match [regex]::Escape($phrase)
+    } | ForEach-Object {
+        # Store the original name
+        $original = $_.Name
+
+        # Remove the phrase from the name
+        $proposed = $original -replace [regex]::Escape($phrase), ""
+
+        # Only proceed if the name actually changes
+        if ($proposed -ne $original) {
+
+            # Determine the new path based on whether it's a folder or file
+            if ($_.PSIsContainer) {
+                # For folders: use Split-Path to get parent directory
+                $parentPath = Split-Path $_.FullName
+                $newPath = Join-Path $parentPath $proposed
+            } else {
+                # For files: use .DirectoryName to get parent directory
+                $parentPath = $_.DirectoryName
+                $newPath = Join-Path $parentPath $proposed
+            }
+
+            # Rename the item (preview only with -WhatIf; remove -WhatIf to apply)
+            Rename-Item -Path $_.FullName -NewName $newPath -Verbose #-WhatIf
+
+            # Log the rename operation to the report
+            $report += [PSCustomObject]@{
+                Phrase         = $phrase
+                Type           = if ($_.PSIsContainer) { "Folder" } else { "File" }
+                Path           = $_.FullName
+                OriginalName   = $original
+                UpdatedName    = $proposed
+            }
+        }
+    }
+}
+
+# create the report and folder path
+$timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss" # Generate timestamp string
+$reportFolder = Join-Path $dir "Reports"# Define the Reports folder path
+if (-not (Test-Path $reportFolder)) { New-Item -Path $reportFolder -ItemType Directory | Out-Null }# Create the Reports folder if it doesn't exist
+$csvPath = Join-Path $reportFolder "rename_files_and_folders_$timestamp.csv"# Build full CSV path with timestamp
+# Export the report
+$report | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8 -Force
+
 }
 
 #if you need to eliminate the _ in a filename, and replace it with a space
